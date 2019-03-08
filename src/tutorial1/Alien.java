@@ -6,6 +6,7 @@
 package tutorial1;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 /**
  *
@@ -18,22 +19,52 @@ public class Alien extends Item {
     private int height;
     private Game game;
     private int speed;
+    private int type;       //Variable that control de type of the alien
+    private int cont;       //Variable that control the movement of the aliens
+    private boolean visible;
     private Animation pink;
     private Animation blue;
     private Animation green;
     private Animation orange;
 
-    public Alien(int x, int y, int direction, int width, int height, Game game) {
+    public Alien(int x, int y, int direction, int width, int height, Game game, int type) {
         super(x, y);
         this.direction = direction;
         this.width = width;
         this.height = height;
         this.game = game;
-        this.speed = 3;
-        this.pink = new Animation (Assets.pink, 500);
-        this.blue = new Animation (Assets.blue, 500);
-        this.green = new Animation (Assets.green, 500);
-        this.orange = new Animation (Assets.orange, 500);
+        this.type = type;
+        this.speed = 15;
+        this.cont = 0;
+        this.visible = true;
+        this.pink = new Animation(Assets.pink, 700);
+        this.blue = new Animation(Assets.blue, 700);
+        this.green = new Animation(Assets.green, 700);
+        this.orange = new Animation(Assets.orange, 700);
+    }
+
+    public void setVisible(boolean Visible) {
+        this.visible = Visible;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setCont(int cont) {
+        this.cont = cont;
+    }
+
+    public int getCont() {
+        return cont;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public int getType() {
+        return type;
     }
 
     public int getDirection() {
@@ -70,30 +101,74 @@ public class Alien extends Item {
 
     @Override
     public void tick() {
-        //HAY QUE PONERLE CONDICIONES PARA QUE HAGA EL TICK DE ANIMATION
-//        this.pink.tick();
-//        if (game.getKeyManager().up){
-//            this.blue.tick();
-//        }
-//        if (game.getKeyManager().down){
-//            this.orange.tick();
-//        }
-//        if (game.getKeyManager().left){
-//            this.green.tick();
-//        }
+        if (isVisible()) {
+            //Depending on the direction and only if the counter is 0 the aliens move
+            //To the right
+            if (getDirection() == 1 && getCont() == 0) {
+                setX(getX() + getSpeed());
+            }
+            //To the left
+            if (getDirection() == 2 && getCont() == 0) {
+                setX(getX() - getSpeed());
+            }
+            //down
+            if (getDirection() == 3 && getCont() == 0) {
+                setY(getY() + getSpeed());
+                if (getX() >= 280) {
+                    setDirection(2);
+                } else if (getX() < 280) {
+                    setDirection(1);
+                }
+            }
+            //Depending of the type of alien the tick for its animation is called
+            //0 for the blue alien
+            if (getType() == 0) {
+                this.blue.tick();
+            }
+            //1 for the green alien
+            if (getType() == 1) {
+                this.green.tick();
+            }
+            //2 for the orange
+            if (getType() == 2) {
+                this.orange.tick();
+            }
+            //3 for the pink
+            if (getType() == 3) {
+                this.pink.tick();
+            }
+            // the counter that control the move increase by 1 every tick
+            setCont(getCont() + 1);
+            //when the counter reach 43 it is reset to 0
+            if (getCont() == 43) {
+                setCont(0);
+            }
+        }
+    }
+
+    /**
+     * Creates a rectangle around the ball
+     *
+     * @return a rectangle with the dimensions of the alien
+     */
+    public Rectangle getPerimetro() {
+        return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
 
     @Override
     public void render(Graphics g) {
-        //HAY QUE PONERLE CONDICIONES PARA QUE SE VEA DEPENDIENDO EL TIP
-//        if (game.getKeyManager().up)
-//            g.drawImage(blue.getCurretFrame(), getX(), getY(), getWidth(), getHeight(), null);
-//        else if (game.getKeyManager().left)
-//            g.drawImage(green.getCurretFrame(), getX(), getY(), getWidth(), getHeight(), null);
-//        else if (game.getKeyManager().down)
-//            g.drawImage(orange.getCurretFrame(), getX(), getY(), getWidth(), getHeight(), null);
-//        else
-//            g.drawImage(pink.getCurretFrame(), getX(), getY(), getWidth(), getHeight(), null);
+        if (getType() == 0) {
+            g.drawImage(blue.getCurretFrame(), getX(), getY(), getWidth(), getHeight(), null);
+        }
+        if (getType() == 1) {
+            g.drawImage(green.getCurretFrame(), getX(), getY(), getWidth(), getHeight(), null);
+        }
+        if (getType() == 2) {
+            g.drawImage(orange.getCurretFrame(), getX(), getY(), getWidth(), getHeight(), null);
+        }
+        if (getType() == 3) {
+            g.drawImage(pink.getCurretFrame(), getX(), getY(), getWidth(), getHeight(), null);
+        }
     }
 
 }

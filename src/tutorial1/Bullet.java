@@ -6,6 +6,7 @@
 package tutorial1;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 /**
  *
@@ -26,7 +27,7 @@ public class Bullet extends Item {
         this.width = width;
         this.height = height;
         this.game = game;
-        this.speed = 3;
+        this.speed = 7;
         visible = false;
     }
 
@@ -76,9 +77,27 @@ public class Bullet extends Item {
             // moving player depending on flags
             setY(getY() - getSpeed());
         }
-
+        if (getY() < -20){
+            setVisible(false);
+        }
     }
-
+    /**
+     * Creates a rectangle around the ball
+     * 
+     * @return a rectangle with the dimensions of the bullet
+     */
+    public Rectangle getPerimetro() {
+        return new Rectangle(getX(), getY(), getWidth(), getHeight());
+    }
+    /**
+     * This function tells us when the bullet intersects another object
+     * 
+     * @param obj gets the object that intersects with the bullet
+     * @return a boolean when the bullet intersects another object
+     */
+    public boolean intersecta(Object obj) {
+        return obj instanceof Alien && getPerimetro().intersects(((Alien) obj).getPerimetro());
+    }
     @Override
     public void render(Graphics g) {
         g.drawImage(Assets.Bullet1, getX(), getY(), getWidth(), getHeight(), null);
