@@ -28,6 +28,7 @@ public class Game implements Runnable {
     private LinkedList<Bullet> bullets;
     private KeyManager keyManager;
     private int contBullet;      //counter for all the bullets
+    private Alien aliens;
 
     public Game(String title, int width, int height) {
         this.title = title;
@@ -59,6 +60,7 @@ public class Game implements Runnable {
         display = new Display(title, getWidth(), getHeight());
         Assets.init();
         player = new Player(380, getHeight() - 120, 1, 50, 50, this);
+        aliens = new Alien(500, 120, 1, 50, 50, this);
         for (int i = 1; i <= 100; i++) {
             bullets.add(new Bullet(getWidth() + 10, -10, 1, 10, 20, this));
         }
@@ -104,6 +106,7 @@ public class Game implements Runnable {
         keyManager.tick();
         // avanceing player with colision
         player.tick();
+        aliens.tick();
         for (int i = 0; i < bullets.size(); i++){
             Bullet bullet = bullets.get(i);
             bullet.tick();
@@ -139,6 +142,7 @@ public class Game implements Runnable {
             g = bs.getDrawGraphics();
             g.drawImage(Assets.background, 0, 0, width, height, null);
             player.render(g);
+            aliens.render(g);
             for (int i = 0; i < bullets.size(); i++) {
                 Bullet bullet = bullets.get(i);
                 bullet.render(g);
