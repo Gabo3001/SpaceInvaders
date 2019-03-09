@@ -82,7 +82,7 @@ public class Bullet extends Item {
         }
     }
     /**
-     * Creates a rectangle around the ball
+     * Creates a rectangle around the bullet
      * 
      * @return a rectangle with the dimensions of the bullet
      */

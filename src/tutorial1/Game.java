@@ -27,9 +27,10 @@ public class Game implements Runnable {
     private Player player;
     private Bullet bullets;
     private KeyManager keyManager;
-    private int contBullet;      //counter for all the bullets
     private boolean bordes;
     private LinkedList<Alien> aliens;
+    private LinkedList<BulletA> bulletsA;
+    private int chance;
 
     public Game(String title, int width, int height) {
         this.title = title;
@@ -37,9 +38,18 @@ public class Game implements Runnable {
         this.height = height;
         running = false;
         keyManager = new KeyManager();
-        contBullet = 0;
         bordes = false;
         aliens = new LinkedList<Alien>();
+        bulletsA = new LinkedList<BulletA>();
+        chance = (int) (Math.random() * (1000));
+    }
+
+    public void setChance(int chance) {
+        this.chance = chance;
+    }
+
+    public int getChance() {
+        return chance;
     }
 
     public void setBordes(boolean bordes) {
@@ -48,14 +58,6 @@ public class Game implements Runnable {
 
     public boolean isBordes() {
         return bordes;
-    }
-
-    public void setContBullet(int contBullet) {
-        this.contBullet = contBullet;
-    }
-
-    public int getContBullet() {
-        return contBullet;
     }
 
     public int getWidth() {
@@ -72,8 +74,11 @@ public class Game implements Runnable {
         player = new Player(380, getHeight() - 120, 1, 50, 50, this);
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 4; j++) {
-                aliens.add(new Alien(i * 50, (j * 40)+60, 1, 30, 30, this, j));
+                aliens.add(new Alien(i * 50, (j * 40) + 60, 1, 30, 30, this, j));
             }
+        }
+        for (int i = 1; i <= 24; i++) {
+            bulletsA.add(new BulletA(getWidth() + 10, -10, 1, 10, 20, this));
         }
         bullets = new Bullet(getWidth() + 10, -10, 1, 10, 20, this);
         display.getJframe().addKeyListener(keyManager);
@@ -119,25 +124,39 @@ public class Game implements Runnable {
         // avanceing player with colision
         player.tick();
         bullets.tick();
+        for (int i = 0; i < bulletsA.size(); i++) {
+            BulletA bulletA = bulletsA.get(i);
+            bulletA.tick();
+        }
+
         for (int i = 0; i < aliens.size(); i++) {
             Alien alien = aliens.get(i);
             alien.tick();
 
             if (alien.getX() + 30 >= getWidth() - 10 && alien.getDirection() == 1) {
                 setBordes(true);
-            }
-            else if(alien.getX() <= 10 && alien.getDirection() == 2){
+            } else if (alien.getX() <= 10 && alien.getDirection() == 2) {
                 setBordes(true);
             }
-            
-            if(bullets.intersecta(alien)){
+
+            setChance((int) (Math.random() * (1000)));
+            if (getChance() == 1 && alien.isVisible()) {
+                BulletA bulletA = bulletsA.get(i);
+                if (!bulletA.isVisible()) {
+                    bulletA.setVisible(true);
+                    bulletA.setX(alien.getX() + 20);
+                    bulletA.setY(alien.getY() - 5);
+                }
+            }
+
+            if (bullets.intersecta(alien)) {
                 alien.setY(-30);
                 alien.setVisible(false);
                 bullets.setVisible(false);
                 bullets.setY(-30);
             }
         }
-        if(isBordes()){
+        if (isBordes()) {
             for (int i = 0; i < aliens.size(); i++) {
                 Alien alien = aliens.get(i);
                 alien.setDirection(3);
@@ -172,6 +191,10 @@ public class Game implements Runnable {
             for (int i = 0; i < aliens.size(); i++) {
                 Alien alien = aliens.get(i);
                 alien.render(g);
+            }
+            for (int i = 0; i < bulletsA.size(); i++) {
+                BulletA bulletA = bulletsA.get(i);
+                bulletA.render(g);
             }
             bullets.render(g);
             bs.show();

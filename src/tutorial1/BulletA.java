@@ -12,21 +12,31 @@ import java.awt.Rectangle;
  *
  * @author HOME
  */
-public class Player extends Item {
-    
+public class BulletA extends Item {
+
     private int direction;
     private int width;
     private int height;
     private Game game;
     private int speed;
-    
-    public Player (int x, int y, int direction, int width, int height, Game game){
+    private boolean visible; //controls when the bullet should move
+
+    public BulletA(int x, int y, int direction, int width, int height, Game game) {
         super(x, y);
         this.direction = direction;
         this.width = width;
         this.height = height;
         this.game = game;
         this.speed = 3;
+        visible = false;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public boolean isVisible() {
+        return visible;
     }
 
     public int getDirection() {
@@ -60,45 +70,37 @@ public class Player extends Item {
     public void setSpeed(int speed) {
         this.speed = speed;
     }
-    
+
     @Override
     public void tick() {
-        // moving player depending on flags
-        if (game.getKeyManager().left){
-            setX(getX() - getSpeed());
+        if (isVisible()) {
+            // moving player depending on flags
+            setY(getY() + getSpeed());
         }
-        if (game.getKeyManager().right){
-            setX(getX() + getSpeed());
+        if (getY() > 500){
+            setVisible(false);
         }
-        // reset x position and y position if colision
-        if (getX() + 50 >= game.getWidth()){
-            setX(game.getWidth() - 50);
-        }
-        else if (getX() <= 0){
-            setX(0);
-        }
-        
     }
     /**
-     * Creates a rectangle around the ball
+     * Creates a rectangle around the bullet
      * 
      * @return a rectangle with the dimensions of the bullet
      */
     public Rectangle getPerimetro() {
         return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
-    
+    /**
+     * This function tells us when the bullet intersects another object
+     * 
+     * @param obj gets the object that intersects with the bullet
+     * @return a boolean when the bullet intersects another object
+     */
+    public boolean intersecta(Object obj) {
+        return obj instanceof Player && getPerimetro().intersects(((Player) obj).getPerimetro());
+    }
     @Override
     public void render(Graphics g) {
-        if (game.getKeyManager().left){
-            g.drawImage(Assets.playerL, getX(), getY(), getWidth(), getHeight(), null);
-        }
-        else if (game.getKeyManager().right){
-            g.drawImage(Assets.playerR, getX(), getY(), getWidth(), getHeight(), null);
-        }
-        else{
-            g.drawImage(Assets.player, getX(), getY(), getWidth(), getHeight(), null);
-        }        
+        g.drawImage(Assets.Bullet2, getX(), getY(), getWidth(), getHeight(), null);
     }
-    
+
 }
