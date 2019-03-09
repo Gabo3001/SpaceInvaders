@@ -8,6 +8,10 @@ package tutorial1;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 
 /**
@@ -129,6 +133,19 @@ public class Game implements Runnable {
             bulletA.tick();
         }
 
+        //when s is press
+        if(getKeyManager().save){
+            //the game is saved
+            saveGame();
+        }
+        
+        //when l is press
+        if(getKeyManager().load){
+            //The game is load
+            loadGame();
+            //The song is played
+            //song.play();
+        }
         for (int i = 0; i < aliens.size(); i++) {
             Alien alien = aliens.get(i);
             alien.tick();
@@ -218,6 +235,76 @@ public class Game implements Runnable {
             } catch (InterruptedException ie) {
                 ie.printStackTrace();
             }
+        }
+    }
+    /**
+     * Function that save key variables of the game in a txt file
+     */
+    private void saveGame(){
+        try{
+            FileWriter fw = new FileWriter ("save.txt");
+            //Aliens' information           
+             for(int i = 0; i < aliens.size() ; i++){
+                Alien alien = aliens.get(i);
+                fw.write(String.valueOf(alien.getX() + "\n"));
+                fw.write(String.valueOf(alien.getY() + "\n"));
+                fw.write(String.valueOf(alien.getDirection() + "\n"));
+                fw.write(String.valueOf(alien.getCont() + "\n"));
+                fw.write(String.valueOf(alien.isVisible()) + "\n");
+                //bullet information
+            }
+             
+             //Spaceship bullet information
+             fw.write(String.valueOf(bullets.getX() + "\n"));
+             fw.write(String.valueOf(bullets.getY() + "\n"));
+             fw.write(String.valueOf(bullets.isVisible() + "\n"));
+             
+             //Player position
+             fw.write(String.valueOf(player.getX()) + "\n");
+             
+             //Bool Border
+             fw.write(String.valueOf(isBordes()) + "\n");
+             
+             
+             //bool pause
+             
+             fw.close();
+             
+            }catch (IOException ex){
+            ex.printStackTrace();
+            }
+}
+    /**
+     * function that load the information saved in the save.txt file to recover
+     * the key variables when the game was save for the last time
+     */
+     private void loadGame(){
+        try{
+            BufferedReader br =  new BufferedReader (new FileReader ("save.txt"));
+            //Aliens' information
+            for(int i = 0; i < aliens.size(); i++){
+                Alien alien= aliens.get(i);
+                alien.setX(Integer.parseInt(br.readLine()));
+                alien.setY(Integer.parseInt(br.readLine()));
+                alien.setDirection(Integer.parseInt(br.readLine()));
+                alien.setCont(Integer.parseInt(br.readLine()));
+                alien.setVisible(Boolean.parseBoolean(br.readLine()));
+                //bullet information
+            }
+            
+            //Spacechip's bullet inofrmation
+            bullets.setX(Integer.parseInt(br.readLine()));
+            bullets.setY(Integer.parseInt(br.readLine()));
+            bullets.setVisible(Boolean.parseBoolean(br.readLine()));
+            
+            //Player Position
+            player.setX(Integer.parseInt(br.readLine()));
+            
+            //Bool Border
+            setBordes(Boolean.parseBoolean(br.readLine()));
+            
+        }catch (IOException ex){
+            ex.printStackTrace();
         }
     }
 }
