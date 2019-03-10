@@ -108,14 +108,17 @@ public class Alien extends Item {
                 //To the right
                 if (getDirection() == 1 && getCont() == 0) {
                     setX(getX() + getSpeed());
+                    Assets.move.play();
                 }
                 //To the left
                 if (getDirection() == 2 && getCont() == 0) {
                     setX(getX() - getSpeed());
+                    Assets.move.play();
                 }
                 //down
                 if (getDirection() == 3 && getCont() == 0) {
                     setY(getY() + getSpeed());
+                    Assets.move.play();
                     if (getX() >= 280) {
                         setDirection(2);
                     } else if (getX() < 280) {

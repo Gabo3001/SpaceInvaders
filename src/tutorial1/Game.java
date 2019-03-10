@@ -150,12 +150,18 @@ public class Game implements Runnable {
         for (int i = 0; i < bulletsA.size(); i++) {
             BulletA bulletA = bulletsA.get(i);
             bulletA.tick();
-            
+            //if an alien bullet intersect the player
             if(bulletA.intersecta(player)){
+                //the bullet move out of the screen and the boolean visible
+                //is set on false
                 bulletA.setVisible(false);
                 bulletA.setY(500);
+                //The player move to its original position
                 player.setX(380);
+                //the player lose a life
                 setLives(getLives()-1);
+                //the sound explosion is played
+                Assets.explosion.play();
             }
         }
         
@@ -169,8 +175,6 @@ public class Game implements Runnable {
         if(getKeyManager().load){
             //The game is load
             loadGame();
-            //The song is played
-            //song.play();
         }
         for (int i = 0; i < aliens.size(); i++) {
             Alien alien = aliens.get(i);
@@ -201,7 +205,9 @@ public class Game implements Runnable {
                 alien.setVisible(false);
                 bullets.setVisible(false);
                 //The bullet disapear from the screen
-                bullets.setY(-30);
+                bullets.setY(-50);
+                //the sound of invader j¿killed is play
+                Assets.aKilled.play();
             }
         }
         //If the aliens touch one of the borders
@@ -223,6 +229,8 @@ public class Game implements Runnable {
                 bullets.setVisible(true);
                 bullets.setX(player.getX() + 20);
                 bullets.setY(player.getY() - 5);
+                //Suena el disparo
+                Assets.shoot.play();
                 //kStop is called to put space in false
                 getKeyManager().kStop();
             }

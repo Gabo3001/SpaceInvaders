@@ -29,6 +29,10 @@ public class Assets {
     public static BufferedImage gameOver;   //Game Over screen
     public static BufferedImage pause;      //Pause Screen
     public static BufferedImage lives;      //text for lives
+    public static SoundClip explosion;      //sound of explosion
+    public static SoundClip shoot;          //sound of the ship shooting
+    public static SoundClip aKilled;        //sond of alien killed
+    public static SoundClip move;           //soun of alien moving
     
     public static void init(){
         background = ImageLoader.loadImage("/tutorial1/images/Background.png");
@@ -59,6 +63,10 @@ public class Assets {
             blue[i] = spritesheetb.crop((i * 120)+10, 0, 98, 98);
             green[i] = spritesheetg.crop((i * 157)+11, 0, 112, 112);
         }
+        explosion = new SoundClip("/tutorial1/sounds/explosion.wav");
+        shoot = new SoundClip("/tutorial1/sounds/shoot.wav");
+        aKilled = new SoundClip("/tutorial1/sounds/invaderkilled.wav");
+        move = new SoundClip("/tutorial1/sounds/move.wav");
     }
     
     
