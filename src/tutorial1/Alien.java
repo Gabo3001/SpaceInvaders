@@ -127,27 +127,28 @@ public class Alien extends Item {
                 }
                 //Depending of the type of alien the tick for its animation is called
                 //0 for the blue alien
-                if (getType() == 0) {
-                    this.blue.tick();
-                }
-                //1 for the green alien
-                if (getType() == 1) {
-                    this.green.tick();
-                }
-                //2 for the orange
-                if (getType() == 2) {
-                    this.orange.tick();
-                }
-                //3 for the pink
-                if (getType() == 3) {
-                    this.pink.tick();
-                }
+
                 // the counter that control the move increase by 1 every tick
                 setCont(getCont() + 1);
                 //when the counter reach 43 it is reset to 0
                 if (getCont() == 43) {
                     setCont(0);
                 }
+            }
+            if (getType() == 0) {
+                this.blue.tick();
+            }
+            //1 for the green alien
+            if (getType() == 1) {
+                this.green.tick();
+            }
+            //2 for the orange
+            if (getType() == 2) {
+                this.orange.tick();
+            }
+            //3 for the pink
+            if (getType() == 3) {
+                this.pink.tick();
             }
         }
     }

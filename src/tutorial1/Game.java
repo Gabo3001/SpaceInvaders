@@ -38,7 +38,9 @@ public class Game implements Runnable {
     private boolean pause;
     private int lives;
     private boolean lose;
-
+    private int score;
+    private int contA;
+    
     public Game(String title, int width, int height) {
         this.title = title;
         this.width = width;
@@ -51,6 +53,24 @@ public class Game implements Runnable {
         this.chance = (int) (Math.random() * (1000));
         this.pause = false;
         this.lives = 3;
+        this.score = 0;
+        this.contA = 0;
+    }
+
+    public void setContA(int contA) {
+        this.contA = contA;
+    }
+
+    public int getContA() {
+        return contA;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getScore() {
+        return score;
     }
 
     public boolean isLose() {
@@ -172,14 +192,10 @@ public class Game implements Runnable {
                 bulletA.setY(500);
                 //The player move to its original position
                 player.setX(380);
-
-                
-
                 //the player lose a life
                 setLives(getLives()-1);
                 //the sound explosion is played
                 Assets.explosion.play();
-
             }
         }
 
@@ -191,13 +207,10 @@ public class Game implements Runnable {
         if (getKeyManager().reset) {
             //reset game
             reset();
-//getKeyManager().kStop();reset is set on false
+            setScore(0);
+            //reset is set on false
             getKeyManager().kStop();
         }
-
-
-            
-        
 
         //when l is press
         if (getKeyManager().load) {
@@ -232,7 +245,7 @@ public class Game implements Runnable {
                 }
             }
             //If a bullet intersect an alien
-            if (bullets.intersecta(alien)) {
+            if (bullets.intersecta(alien) && alien.isVisible()) {
                 //the alien is move out of the screen
                 alien.setY(-30);
                 //the boolean visible is set false for the alien and the bullet
@@ -240,6 +253,10 @@ public class Game implements Runnable {
                 bullets.setVisible(false);
                 //The bullet disapear from the screen
                 bullets.setY(-50);
+                //The score aument by 20
+                setScore(getScore()+ 20);
+                //The counter of aliens killed aument in 1
+                setContA(getContA()+1);
                 //the sound of invader j¿killed is play
                 Assets.aKilled.play();
             }
@@ -285,6 +302,10 @@ public class Game implements Runnable {
                 getKeyManager().kStop();
             }
         }
+        if(getContA() == 24){
+            reset();
+            setContA(0);
+        }
 
     }
 
@@ -322,7 +343,9 @@ public class Game implements Runnable {
             if (getLives() <= 0) {
                 g.drawImage(Assets.gameOver, 0, 0, width, height, null);
             }
-
+            //Draw score
+            g.setColor(Color.WHITE);
+            g.drawString("SCORE :" + getScore(), 1, 20);
             bs.show();
             g.dispose();
         }
@@ -426,6 +449,9 @@ public class Game implements Runnable {
             fw.write(String.valueOf(getLives()) + "\n");
             fw.write(String.valueOf(isLose()) + "\n");
             
+            fw.write(String.valueOf(getScore()) + "\n");
+            fw.write(String.valueOf(getContA()) + "\n");
+            
             fw.close();
 
         } catch (IOException ex) {
@@ -474,6 +500,9 @@ public class Game implements Runnable {
             setPause(Boolean.parseBoolean(br.readLine()));
             setLives(Integer.parseInt(br.readLine()));
             setLose(Boolean.parseBoolean(br.readLine()));
+            
+            setScore(Integer.parseInt(br.readLine()));
+            setContA(Integer.parseInt(br.readLine()));
 
         } catch (IOException ex) {
             ex.printStackTrace();
