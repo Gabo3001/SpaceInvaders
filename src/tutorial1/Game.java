@@ -170,7 +170,12 @@ public class Game implements Runnable {
             //the game is saved
             saveGame();
         }
-        
+        if (getKeyManager().reset) {
+            //reset game
+            reset();
+            //reset is set on false
+            getKeyManager().kStop();
+        }
         //when l is press
         if(getKeyManager().load){
             //The game is load
@@ -302,6 +307,43 @@ public class Game implements Runnable {
                 ie.printStackTrace();
             }
         }
+    }
+    /**
+     * Function that reset the game
+     */
+    private void reset() {
+        //player postion
+        player.setX(380);
+
+        //player's bullet
+        bullets.setX(getWidth() + 10);
+        bullets.setY(-10);
+
+        //Bullets Aliens
+        //pause
+        setPause(false);
+        //restore lives
+        setLives(3);
+
+        for (int i = 0; i < bulletsA.size(); i++) {
+            BulletA b = bulletsA.get(i);
+            b.setX(getWidth() + 10);
+            b.setY(-10);
+        }
+
+        int pos = 0;
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 4; j++) {
+                Alien alien = aliens.get(pos);
+                alien.setX(i * 50);
+                alien.setY((j * 40) + 60);
+                alien.setDirection(1);
+                alien.setCont(0);
+                alien.setVisible(true);
+                pos++;
+            }
+        }
+
     }
     /**
      * Function that save key variables of the game in a txt file
