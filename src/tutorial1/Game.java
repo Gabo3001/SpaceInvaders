@@ -37,6 +37,7 @@ public class Game implements Runnable {
     private int chance;
     private boolean pause;
     private int lives;
+    private boolean lose;
 
     public Game(String title, int width, int height) {
         this.title = title;
@@ -51,6 +52,15 @@ public class Game implements Runnable {
         this.pause = false;
         this.lives = 3;
     }
+
+    public boolean isLose() {
+        return lose;
+    }
+
+    public void setLose(boolean lose) {
+        this.lose = lose;
+    }
+    
 
     public void setLives(int lives) {
         this.lives = lives;
@@ -147,6 +157,10 @@ public class Game implements Runnable {
         keyManager.tick();
         player.tick();
         bullets.tick();
+
+        if (getLives() <= 0) {
+            setPause(true);
+        }
         for (int i = 0; i < bulletsA.size(); i++) {
             BulletA bulletA = bulletsA.get(i);
             bulletA.tick();
@@ -158,32 +172,47 @@ public class Game implements Runnable {
                 bulletA.setY(500);
                 //The player move to its original position
                 player.setX(380);
+
+                
+
                 //the player lose a life
                 setLives(getLives()-1);
                 //the sound explosion is played
                 Assets.explosion.play();
+
             }
         }
-        
+
         //when s is press
-        if(getKeyManager().save){
+        if (getKeyManager().save) {
             //the game is saved
             saveGame();
         }
         if (getKeyManager().reset) {
             //reset game
             reset();
-            //reset is set on false
+//getKeyManager().kStop();reset is set on false
             getKeyManager().kStop();
         }
+
+
+            
+        
+
         //when l is press
-        if(getKeyManager().load){
+        if (getKeyManager().load) {
             //The game is load
             loadGame();
         }
         for (int i = 0; i < aliens.size(); i++) {
             Alien alien = aliens.get(i);
             alien.tick();
+
+            if (alien.getY() >= getHeight() - 180) {
+                setPause(true);
+                lose = true;
+            }
+
             //If an alien hit a border the boolean bordes is set on true
             if (alien.getX() + 30 >= getWidth() - 10 && alien.getDirection() == 1) {
                 setBordes(true);
@@ -240,17 +269,16 @@ public class Game implements Runnable {
                 getKeyManager().kStop();
             }
         }
-        
-        if (getKeyManager().pause){
+
+        if (getKeyManager().pause) {
             //if pause is true
-            if (isPause()){
+            if (isPause()) {
                 //set pause to false
                 setPause(false);
                 //pStop is called set the key press back to false
                 getKeyManager().kStop();
-            }
-            //if pause is false
-            else{
+            } //if pause is false
+            else {
                 //set pause to true
                 setPause(true);
                 //pStop is called set the key press back to false
@@ -269,6 +297,7 @@ public class Game implements Runnable {
             g = bs.getDrawGraphics();
             g.drawImage(Assets.background, 0, 0, width, height, null);
             player.render(g);
+
             for (int i = 0; i < aliens.size(); i++) {
                 Alien alien = aliens.get(i);
                 alien.render(g);
@@ -278,13 +307,22 @@ public class Game implements Runnable {
                 bulletA.render(g);
             }
             g.drawImage(Assets.lives, getWidth() - 185, 0, 50, 40, null);
-            for(int i =0 ; i < getLives(); i++){
-               g.drawImage(Assets.player, width - (40*i)- 50, 0, 40, 40, null);
+            for (int i = 0; i < getLives(); i++) {
+                g.drawImage(Assets.player, width - (40 * i) - 50, 0, 40, 40, null);
             }
             bullets.render(g);
-            if (isPause()){
+            if (isPause()) {
                 g.drawImage(Assets.pause, 250, 50, 300, 400, null);
             }
+
+            if (lose) {
+                g.drawImage(Assets.gameOver, 0, 0, width, height, null);
+            }
+
+            if (getLives() <= 0) {
+                g.drawImage(Assets.gameOver, 0, 0, width, height, null);
+            }
+
             bs.show();
             g.dispose();
         }
@@ -308,6 +346,7 @@ public class Game implements Runnable {
             }
         }
     }
+
     /**
      * Function that reset the game
      */
@@ -348,11 +387,11 @@ public class Game implements Runnable {
     /**
      * Function that save key variables of the game in a txt file
      */
-    private void saveGame(){
-        try{
-            FileWriter fw = new FileWriter ("save.txt");
+    private void saveGame() {
+        try {
+            FileWriter fw = new FileWriter("save.txt");
             //Aliens' information           
-             for(int i = 0; i < aliens.size() ; i++){
+            for (int i = 0; i < aliens.size(); i++) {
                 Alien alien = aliens.get(i);
                 fw.write(String.valueOf(alien.getX() + "\n"));
                 fw.write(String.valueOf(alien.getY() + "\n"));
@@ -361,37 +400,49 @@ public class Game implements Runnable {
                 fw.write(String.valueOf(alien.isVisible()) + "\n");
                 //bullet information
             }
+
+            //Spaceship bullet information
+            fw.write(String.valueOf(bullets.getX() + "\n"));
+            fw.write(String.valueOf(bullets.getY() + "\n"));
+            fw.write(String.valueOf(bullets.isVisible() + "\n"));
+            
+            //Alien's bullets
+             for (int i = 0; i < bulletsA.size(); i++) {
+                 BulletA b = bulletsA.get(i);
+                 fw.write(String.valueOf(b.getX() + "\n"));
+                 fw.write(String.valueOf(b.getY() + "\n"));
+                 fw.write(String.valueOf(b.isVisible() + "\n"));          
+        }
              
-             //Spaceship bullet information
-             fw.write(String.valueOf(bullets.getX() + "\n"));
-             fw.write(String.valueOf(bullets.getY() + "\n"));
-             fw.write(String.valueOf(bullets.isVisible() + "\n"));
-             
-             //Player position
-             fw.write(String.valueOf(player.getX()) + "\n");
-             
-             //Bool Border
-             fw.write(String.valueOf(isBordes()) + "\n");
-             
-             
-             //bool pause
-             
-             fw.close();
-             
-            }catch (IOException ex){
+
+            //Player position
+            fw.write(String.valueOf(player.getX()) + "\n");
+
+            //Bool Border
+            fw.write(String.valueOf(isBordes()) + "\n");
+
+            //bool pause
+            fw.write(String.valueOf(isPause()) + "\n");
+            fw.write(String.valueOf(getLives()) + "\n");
+            fw.write(String.valueOf(isLose()) + "\n");
+            
+            fw.close();
+
+        } catch (IOException ex) {
             ex.printStackTrace();
-            }
-}
+        }
+    }
+
     /**
      * function that load the information saved in the save.txt file to recover
      * the key variables when the game was save for the last time
      */
-     private void loadGame(){
-        try{
-            BufferedReader br =  new BufferedReader (new FileReader ("save.txt"));
+    private void loadGame() {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("save.txt"));
             //Aliens' information
-            for(int i = 0; i < aliens.size(); i++){
-                Alien alien= aliens.get(i);
+            for (int i = 0; i < aliens.size(); i++) {
+                Alien alien = aliens.get(i);
                 alien.setX(Integer.parseInt(br.readLine()));
                 alien.setY(Integer.parseInt(br.readLine()));
                 alien.setDirection(Integer.parseInt(br.readLine()));
@@ -399,20 +450,34 @@ public class Game implements Runnable {
                 alien.setVisible(Boolean.parseBoolean(br.readLine()));
                 //bullet information
             }
-            
+
             //Spacechip's bullet inofrmation
             bullets.setX(Integer.parseInt(br.readLine()));
             bullets.setY(Integer.parseInt(br.readLine()));
             bullets.setVisible(Boolean.parseBoolean(br.readLine()));
             
+             //Alien's bullets
+             for (int i = 0; i < bulletsA.size(); i++) {
+                 BulletA b = bulletsA.get(i);
+                 b.setX(Integer.parseInt(br.readLine()));
+                 b.setY(Integer.parseInt(br.readLine()));
+                 b.setVisible(Boolean.parseBoolean(br.readLine()));         
+        }
+
+
             //Player Position
             player.setX(Integer.parseInt(br.readLine()));
-            
+
             //Bool Border
             setBordes(Boolean.parseBoolean(br.readLine()));
             
-        }catch (IOException ex){
+            setPause(Boolean.parseBoolean(br.readLine()));
+            setLives(Integer.parseInt(br.readLine()));
+            setLose(Boolean.parseBoolean(br.readLine()));
+
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
+
 }
