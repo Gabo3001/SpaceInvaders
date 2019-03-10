@@ -73,31 +73,37 @@ public class BulletA extends Item {
 
     @Override
     public void tick() {
-        if (isVisible()) {
-            // moving player depending on flags
-            setY(getY() + getSpeed());
-        }
-        if (getY() > 500){
-            setVisible(false);
+        //if the game is not in pause
+        if (!game.isPause()) {
+            if (isVisible()) {
+                // moving player depending on flags
+                setY(getY() + getSpeed());
+            }
+            if (getY() > 500) {
+                setVisible(false);
+            }
         }
     }
+
     /**
      * Creates a rectangle around the bullet
-     * 
+     *
      * @return a rectangle with the dimensions of the bullet
      */
     public Rectangle getPerimetro() {
         return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
+
     /**
      * This function tells us when the bullet intersects another object
-     * 
+     *
      * @param obj gets the object that intersects with the bullet
      * @return a boolean when the bullet intersects another object
      */
     public boolean intersecta(Object obj) {
         return obj instanceof Player && getPerimetro().intersects(((Player) obj).getPerimetro());
     }
+
     @Override
     public void render(Graphics g) {
         g.drawImage(Assets.Bullet2, getX(), getY(), getWidth(), getHeight(), null);

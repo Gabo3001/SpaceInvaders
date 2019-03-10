@@ -101,47 +101,50 @@ public class Alien extends Item {
 
     @Override
     public void tick() {
-        if (isVisible()) {
-            //Depending on the direction and only if the counter is 0 the aliens move
-            //To the right
-            if (getDirection() == 1 && getCont() == 0) {
-                setX(getX() + getSpeed());
-            }
-            //To the left
-            if (getDirection() == 2 && getCont() == 0) {
-                setX(getX() - getSpeed());
-            }
-            //down
-            if (getDirection() == 3 && getCont() == 0) {
-                setY(getY() + getSpeed());
-                if (getX() >= 280) {
-                    setDirection(2);
-                } else if (getX() < 280) {
-                    setDirection(1);
+        //if the game is not in pause
+        if (!game.isPause()) {
+            if (isVisible()) {
+                //Depending on the direction and only if the counter is 0 the aliens move
+                //To the right
+                if (getDirection() == 1 && getCont() == 0) {
+                    setX(getX() + getSpeed());
                 }
-            }
-            //Depending of the type of alien the tick for its animation is called
-            //0 for the blue alien
-            if (getType() == 0) {
-                this.blue.tick();
-            }
-            //1 for the green alien
-            if (getType() == 1) {
-                this.green.tick();
-            }
-            //2 for the orange
-            if (getType() == 2) {
-                this.orange.tick();
-            }
-            //3 for the pink
-            if (getType() == 3) {
-                this.pink.tick();
-            }
-            // the counter that control the move increase by 1 every tick
-            setCont(getCont() + 1);
-            //when the counter reach 43 it is reset to 0
-            if (getCont() == 43) {
-                setCont(0);
+                //To the left
+                if (getDirection() == 2 && getCont() == 0) {
+                    setX(getX() - getSpeed());
+                }
+                //down
+                if (getDirection() == 3 && getCont() == 0) {
+                    setY(getY() + getSpeed());
+                    if (getX() >= 280) {
+                        setDirection(2);
+                    } else if (getX() < 280) {
+                        setDirection(1);
+                    }
+                }
+                //Depending of the type of alien the tick for its animation is called
+                //0 for the blue alien
+                if (getType() == 0) {
+                    this.blue.tick();
+                }
+                //1 for the green alien
+                if (getType() == 1) {
+                    this.green.tick();
+                }
+                //2 for the orange
+                if (getType() == 2) {
+                    this.orange.tick();
+                }
+                //3 for the pink
+                if (getType() == 3) {
+                    this.pink.tick();
+                }
+                // the counter that control the move increase by 1 every tick
+                setCont(getCont() + 1);
+                //when the counter reach 43 it is reset to 0
+                if (getCont() == 43) {
+                    setCont(0);
+                }
             }
         }
     }

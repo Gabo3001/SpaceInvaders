@@ -26,6 +26,9 @@ public class Assets {
     public static BufferedImage Sorange;   //Sprite for the orange alien
     public static BufferedImage Sblue;     //Sprite for the blue alien
     public static BufferedImage Sgreen;    //Sprite for the green alien
+    public static BufferedImage gameOver;   //Game Over screen
+    public static BufferedImage pause;      //Pause Screen
+    public static BufferedImage lives;      //text for lives
     
     public static void init(){
         background = ImageLoader.loadImage("/tutorial1/images/Background.png");
@@ -38,6 +41,9 @@ public class Assets {
         Sorange = ImageLoader.loadImage("/tutorial1/images/orange.png");
         Sblue = ImageLoader.loadImage("/tutorial1/images/blue.png");
         Sgreen = ImageLoader.loadImage("/tutorial1/images/green.png");
+        pause = ImageLoader.loadImage("/tutorial1/images/pause.png");
+        gameOver = ImageLoader.loadImage("/tutorial1/images/gameOver.png");
+        lives = ImageLoader.loadImage("/tutorial1/images/lives.png");
         SpriteSheet spritesheetp = new SpriteSheet(Spink);
         SpriteSheet spritesheeto = new SpriteSheet(Sorange);
         SpriteSheet spritesheetb = new SpriteSheet(Sblue);

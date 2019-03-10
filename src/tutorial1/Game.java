@@ -35,17 +35,37 @@ public class Game implements Runnable {
     private LinkedList<Alien> aliens;
     private LinkedList<BulletA> bulletsA;
     private int chance;
+    private boolean pause;
+    private int lives;
 
     public Game(String title, int width, int height) {
         this.title = title;
         this.width = width;
         this.height = height;
-        running = false;
-        keyManager = new KeyManager();
-        bordes = false;
-        aliens = new LinkedList<Alien>();
-        bulletsA = new LinkedList<BulletA>();
-        chance = (int) (Math.random() * (1000));
+        this.running = false;
+        this.keyManager = new KeyManager();
+        this.bordes = false;
+        this.aliens = new LinkedList<Alien>();
+        this.bulletsA = new LinkedList<BulletA>();
+        this.chance = (int) (Math.random() * (1000));
+        this.pause = false;
+        this.lives = 3;
+    }
+
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
+    public int getLives() {
+        return lives;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
+    }
+
+    public boolean isPause() {
+        return pause;
     }
 
     public void setChance(int chance) {
@@ -82,7 +102,7 @@ public class Game implements Runnable {
             }
         }
         for (int i = 1; i <= 24; i++) {
-            bulletsA.add(new BulletA(getWidth() + 10, -10, 1, 10, 20, this));
+            bulletsA.add(new BulletA(getWidth() + 10, -10, 1, 20, 25, this));
         }
         bullets = new Bullet(getWidth() + 10, -10, 1, 10, 20, this);
         display.getJframe().addKeyListener(keyManager);
@@ -125,14 +145,20 @@ public class Game implements Runnable {
 
     private void tick() {
         keyManager.tick();
-        // avanceing player with colision
         player.tick();
         bullets.tick();
         for (int i = 0; i < bulletsA.size(); i++) {
             BulletA bulletA = bulletsA.get(i);
             bulletA.tick();
+            
+            if(bulletA.intersecta(player)){
+                bulletA.setVisible(false);
+                bulletA.setY(500);
+                player.setX(380);
+                setLives(getLives()-1);
+            }
         }
-
+        
         //when s is press
         if(getKeyManager().save){
             //the game is saved
@@ -149,39 +175,47 @@ public class Game implements Runnable {
         for (int i = 0; i < aliens.size(); i++) {
             Alien alien = aliens.get(i);
             alien.tick();
-
+            //If an alien hit a border the boolean bordes is set on true
             if (alien.getX() + 30 >= getWidth() - 10 && alien.getDirection() == 1) {
                 setBordes(true);
             } else if (alien.getX() <= 10 && alien.getDirection() == 2) {
                 setBordes(true);
             }
-
+            //Chance get a random number chom 0 to 999
             setChance((int) (Math.random() * (1000)));
-            if (getChance() == 1 && alien.isVisible()) {
+            //if chance is 1, the alien is visible and is not pause
+            if (getChance() == 1 && alien.isVisible() && !isPause()) {
                 BulletA bulletA = bulletsA.get(i);
                 if (!bulletA.isVisible()) {
+                    //The alien shoot a bullet
                     bulletA.setVisible(true);
                     bulletA.setX(alien.getX() + 20);
                     bulletA.setY(alien.getY() - 5);
                 }
             }
-
+            //If a bullet intersect an alien
             if (bullets.intersecta(alien)) {
+                //the alien is move out of the screen
                 alien.setY(-30);
+                //the boolean visible is set false for the alien and the bullet
                 alien.setVisible(false);
                 bullets.setVisible(false);
+                //The bullet disapear from the screen
                 bullets.setY(-30);
             }
         }
+        //If the aliens touch one of the borders
         if (isBordes()) {
+            //All the aliens change direction down
             for (int i = 0; i < aliens.size(); i++) {
                 Alien alien = aliens.get(i);
                 alien.setDirection(3);
             }
+            //set Bordes to false
             setBordes(false);
         }
         //When the space key is press
-        if (getKeyManager().space) {
+        if (getKeyManager().space && !isPause()) {
             //kStop is called to put space in false
             getKeyManager().kStop();
             if (!bullets.isVisible()) {
@@ -190,6 +224,23 @@ public class Game implements Runnable {
                 bullets.setX(player.getX() + 20);
                 bullets.setY(player.getY() - 5);
                 //kStop is called to put space in false
+                getKeyManager().kStop();
+            }
+        }
+        
+        if (getKeyManager().pause){
+            //if pause is true
+            if (isPause()){
+                //set pause to false
+                setPause(false);
+                //pStop is called set the key press back to false
+                getKeyManager().kStop();
+            }
+            //if pause is false
+            else{
+                //set pause to true
+                setPause(true);
+                //pStop is called set the key press back to false
                 getKeyManager().kStop();
             }
         }
@@ -213,7 +264,14 @@ public class Game implements Runnable {
                 BulletA bulletA = bulletsA.get(i);
                 bulletA.render(g);
             }
+            g.drawImage(Assets.lives, getWidth() - 185, 0, 50, 40, null);
+            for(int i =0 ; i < getLives(); i++){
+               g.drawImage(Assets.player, width - (40*i)- 50, 0, 40, 40, null);
+            }
             bullets.render(g);
+            if (isPause()){
+                g.drawImage(Assets.pause, 250, 50, 300, 400, null);
+            }
             bs.show();
             g.dispose();
         }
