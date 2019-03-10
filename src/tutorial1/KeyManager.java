@@ -22,6 +22,7 @@ public class KeyManager implements KeyListener{
     public boolean load;
     public boolean save;
     public boolean pause;
+    public boolean reset;
     
     private boolean keys[];
     
@@ -35,8 +36,8 @@ public class KeyManager implements KeyListener{
 
     @Override
     public void keyPressed(KeyEvent e) {
-        //if the key press is different of space
-        if (e.getKeyCode() != KeyEvent.VK_SPACE && e.getKeyCode() != KeyEvent.VK_P){
+        //if the key press is different of space, p or r
+        if (e.getKeyCode() != KeyEvent.VK_SPACE && e.getKeyCode() != KeyEvent.VK_P && e.getKeyCode() != KeyEvent.VK_R){
             // set true to every key pressed
             keys[e.getKeyCode()] = true;
         }
@@ -54,18 +55,24 @@ public class KeyManager implements KeyListener{
             //set true p key
             keys[e.getKeyCode()] = true;
         }
+        //If r is realised
+        else if(e.getKeyCode() == KeyEvent.VK_R){
+            //set true r key
+            keys[e.getKeyCode()] = true;
+        }
         // set false to every key released
         else{
             keys[e.getKeyCode()] = false;
         }
     }
     /**
-     * this function set false to the space and p key
+     * this function set false to the space, r and p key
      */
     public void kStop(){
-        //Function that set in false the p and r key
+        //Function that set in false space, p and r key
         keys [KeyEvent.VK_SPACE] = false;
         keys [KeyEvent.VK_P] = false;
+        keys [KeyEvent.VK_R] = false;
     }
     /**
      *  to enable or disable moves on every tick
@@ -79,5 +86,6 @@ public class KeyManager implements KeyListener{
         load = keys[KeyEvent.VK_L];
         save = keys[KeyEvent.VK_S];
         pause = keys[KeyEvent.VK_P];
+        reset = keys[KeyEvent.VK_R];
     }
 }
